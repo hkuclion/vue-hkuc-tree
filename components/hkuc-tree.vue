@@ -1,6 +1,7 @@
 <template>
 	<ul
 		class="hkuc-ztree"
+		:class="{'tree-line':_setting.view.showLine}"
 		v-if="nodes && nodes.length"
 	>
 		<hkuc-tree-node
@@ -16,8 +17,12 @@
 	</ul>
 </template>
 
+<style src="../assets/hkuc-tree.css"></style>
+<style src="font-awesome/css/font-awesome.css"></style>
+
 <script>
 	import HkucTreeNode from './hkuc-tree-node';
+	import hkucTreeInterface from '../lib/hkucTreeInterface';
 
 	export default {
 		props:[
@@ -32,8 +37,12 @@
 							title:'title',
 							children:'children',
 						}
+					},
+					view:{
+						showLine:true,
 					}
 				},
+				treeInterface:null
 			}
 		},
 		model:{
@@ -52,6 +61,15 @@
 				return {
 					children:this.nodes
 				}
+			}
+		},
+		mounted(){
+			this.treeInterface = new hkucTreeInterface(this);
+		},
+		destroyed(){
+			if(this.treeInterface) {
+				this.treeInterface.destructor();
+				this.treeInterface = null;
 			}
 		}
 	}

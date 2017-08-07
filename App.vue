@@ -20,7 +20,11 @@
 						children:[
 							{name:"h"},
 							{name:"k"},
-							{name:"u"},
+							{name:"u", children:[
+								{name:'a'},
+								{name:'b'},
+								{name:'c'}
+							]},
 							{
 								name:"c",
 								children:[
@@ -32,8 +36,15 @@
 						]
 					},
 					{name:'lion'},
+					{name:'ligueston'},
 				],
-				treeSetting:{},
+				treeSetting:{
+					callback:{
+						beforeSwitchExpand(node) {
+							
+						}
+					}
+				},
 			}
 		},
 		components:{
@@ -46,5 +57,8 @@
 	body {
 		margin: 0;
 		padding: 0;
+	}
+	#app{
+		padding: 10px;
 	}
 </style>
