@@ -7,12 +7,14 @@
 		<hkuc-tree-node
 			ref="child-node"
 			v-for="(node,index) in nodes"
+			v-if="node"
 			v-model="nodes[index]"
 			:setting="_setting"
 			:key="index"
 			:level="0"
 			:level-count="nodes.length"
 			:level-index="index"
+			:tree-interface="treeInterface"
 		></hkuc-tree-node>
 	</ul>
 </template>
@@ -38,11 +40,23 @@
 							children:'children',
 						}
 					},
+					check:{
+						enable:false,
+						associate:true,
+					},
 					view:{
 						showLine:true,
+						multiSelect:true,
+						dblClickExpand:true,
+						hover:null,
+						rename:true,
+						'delete':true,
+					},
+					callback:{
+
 					}
 				},
-				treeInterface:null
+				treeInterface:null,
 			}
 		},
 		model:{
@@ -61,16 +75,13 @@
 				return {
 					children:this.nodes
 				}
-			}
+			},
 		},
-		mounted(){
+		created(){
 			this.treeInterface = new hkucTreeInterface(this);
 		},
 		destroyed(){
-			if(this.treeInterface) {
-				this.treeInterface.destructor();
-				this.treeInterface = null;
-			}
+			this.treeInterface.destructor();
 		}
 	}
 

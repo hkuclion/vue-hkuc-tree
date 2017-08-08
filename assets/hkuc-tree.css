@@ -1,12 +1,22 @@
 .hkuc-ztree,
 .hkuc-ztree ul{ margin: 0; padding: 0;}
 .hkuc-ztree li{ list-style: none; }
-
+.hkuc-ztree ul,
+.hkuc-ztree li{ position: relative; }
+.hkuc-ztree a.tree-node{ padding:0 0.1em; margin-left: 0.1em; cursor: pointer }
+.hkuc-ztree a.tree-node.selected{ background: #fffdab; border:1px solid orange;}
+.hkuc-ztree li > span + span,
+.hkuc-ztree a.tree-node > span + span,
+.hkuc-ztree a.tree-node .tree-node-hover > span+span { margin-left: 0.3em; }
 .hkuc-ztree .tree-node-children{ padding-left:1em; }
-.hkuc-ztree.tree-line li.node-line,
-.hkuc-ztree.tree-line li ul{ background: repeat-y calc(0.5em - 1px) url(data:image/gif;base64,R0lGODlhAQACAIABAAAAAP///yH5BAEAAAEALAAAAAABAAIAAAICRAoAOw==); }
-.hkuc-ztree.tree-line li:last-child ul{ background: none; }
+.hkuc-ztree.tree-line li.node-line::before,
+.hkuc-ztree.tree-line li ul::before{ content:''; position: absolute; width:0.5em; height:100%; left:0.4em; top:0; border-left:1px solid #000; opacity: 0.2 }
+.hkuc-ztree.tree-line li.node-line:last-child::before{ height: 50%; }
+.hkuc-ztree.tree-line li.node-line::after{ content: ''; position: absolute; width: 0.5em; height: 50%; left: 0.4em; top: -1px; border-bottom: 1px solid #000; opacity: 0.2 }
+.hkuc-ztree.tree-line li.tree-level-0.node-line:first-child::before{ height: 50%; bottom:-1px; top:auto; }
 
+.hkuc-ztree.tree-line li:last-child ul::before{ display: none; }
+.hkuc-ztree .tree-node-name-input{ vertical-align: top; }
 
 
 .hkuc-ztree .fa-blank::after { content: "\f0c8"; color: transparent; }

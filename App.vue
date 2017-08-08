@@ -3,12 +3,15 @@
 		<hkuc-tree
 			:nodes="treeNodes"
 			:setting="treeSetting"
+			@addChild = "addChild"
 		></hkuc-tree>
 	</div>
 </template>
 
 <script>
-	import HkucTree from '@/vue-hkuc-tree/components/hkuc-tree';
+	import hkucTree from '@/vue-hkuc-tree/components/hkuc-tree';
+	import hoverId from '@/vue-hkuc-tree/hover/hover-id';
+	import hoverAdd from '@/vue-hkuc-tree/hover/hover-add';
 
 	export default {
 		name:'app',
@@ -21,17 +24,12 @@
 							{name:"h"},
 							{name:"k"},
 							{name:"u", children:[
-								{name:'a'},
-								{name:'b'},
-								{name:'c'}
+								{name:'a', id:1},
+								{name:'b', id:1},
+								{name:'c', id:1},
 							]},
 							{
-								name:"c",
-								children:[
-									{name:'a'},
-									{name:'b'},
-									{name:'c'}
-								]
+								name:"d",
 							},
 						]
 					},
@@ -39,16 +37,28 @@
 					{name:'ligueston'},
 				],
 				treeSetting:{
-					callback:{
-						beforeSwitchExpand(node) {
-							
-						}
+					check:{
+						enable:true,
+						associate:true
+					},
+					view:{
+						hover:[
+							hoverAdd,hoverId
+						]
 					}
 				},
 			}
 		},
+		methods:{
+			addChild(nodeInterface,node){
+				let name = prompt('请输入新节点的名称',node.name);
+				if(name){
+					nodeInterface.addChild({name});
+				}
+			}
+		},
 		components:{
-			HkucTree
+			hkucTree
 		}
 	}
 </script>
