@@ -1,17 +1,18 @@
 <template>
 	<div id="app">
 		<hkuc-tree
-			:nodes="treeNodes"
+			v-model="treeNodes"
 			:setting="treeSetting"
 			@addChild = "addChild"
-		></hkuc-tree>
+		>
+		</hkuc-tree>
 	</div>
 </template>
 
 <script>
-	import hkucTree from '@/vue-hkuc-tree/components/hkuc-tree';
-	import hoverId from '@/vue-hkuc-tree/hover/hover-id';
-	import hoverAdd from '@/vue-hkuc-tree/hover/hover-add';
+	import hkucTree from '@/components/hkuc-tree';
+	import hoverId from '@/hover/hover-id';
+	import hoverAdd from '@/hover/hover-add';
 
 	export default {
 		name:'app',
@@ -58,7 +59,7 @@
 			}
 		},
 		components:{
-			hkucTree
+			hkucTree,
 		}
 	}
 </script>

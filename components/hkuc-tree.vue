@@ -1,104 +1,77 @@
 <template>
-	<ul
-		class="hkuc-ztree"
-		:class="{'tree-line':_setting.view.showLine}"
-		v-if="nodes && nodes.length"
-	>
-		<hkuc-tree-node
-			ref="child-node"
-			v-for="(node,index) in nodes"
-			v-if="node"
-			v-model="nodes[index]"
-			:setting="_setting"
-			:key="index"
-			:level="0"
-			:level-count="nodes.length"
-			:level-index="index"
-			:tree-interface="treeInterface"
-		></hkuc-tree-node>
-	</ul>
+	<hkuc-tree-node-root
+		v-if="rootId"
+		v-model="rootNode"
+		:setting="mergedSetting"
+		:id="rootId"
+		:treeInterface="treeInterface"
+	/>
 </template>
 
-<style src="../assets/hkuc-tree.css"></style>
-<style src="font-awesome/css/font-awesome.css"></style>
-
 <script>
-	import HkucTreeNode from './hkuc-tree-node';
-	import hkucTreeInterface from '../lib/hkucTreeInterface';
+	import HkucTreeInterface from '../lib/HkucTreeInterface';
+	import HkucTreeNodeRoot from "./hkuc-tree-node-root";
+	import 'font-awesome/css/font-awesome.min.css';
+	import '@/assets/hkuc-tree.css';
+	import extend from 'extend';
+
+	let defaultSetting = {
+		data:{
+			key:{
+				name:'name',
+				title:'title',
+				children:'children',
+			}
+		},
+		check:{
+			enable:false,
+			associate:true,
+		},
+		view:{
+			showLine:true,
+			multiSelect:true,
+			dblClickExpand:true,
+			hover:null,
+			rename:true,
+			'delete':true,
+		},
+		callback:{}
+	};
 
 	export default {
-		props:[
-			'nodes', 'setting'
-		],
+		props:['setting','nodes'],
+		name:"hkuc-tree",
 		data(){
 			return {
-				defaultSetting:{
-					data:{
-						key:{
-							name:'name',
-							title:'title',
-							children:'children',
-						}
-					},
-					check:{
-						enable:false,
-						associate:true,
-					},
-					view:{
-						showLine:true,
-						multiSelect:true,
-						dblClickExpand:true,
-						hover:null,
-						rename:true,
-						'delete':true,
-					},
-					callback:{
-
-					}
-				},
+				rootNode:null,
+				rootId:null,
 				treeInterface:null,
+				mergedSetting:null,
 			}
+		},
+		components:{
+			HkucTreeNodeRoot,
 		},
 		model:{
 			prop:'nodes',
 			event:'update',
 		},
-		components:{
-			HkucTreeNode
+		mounted(){
+			this.mergedSetting = extend(true,{},defaultSetting,this.setting);
+			this.treeInterface = new HkucTreeInterface(this.mergedSetting);
+
+			this.rootNode = {
+				children:this.nodes
+			};
+
+			this.rootId=this.treeInterface.registerNode(this.rootNode);
 		},
-		computed:{
-			_setting() {
-				return deepAssign(this.defaultSetting, this.setting);
-			},
-			node(){
-				console.log("getNode");
-				return {
-					children:this.nodes
-				}
-			},
-		},
-		created(){
-			this.treeInterface = new hkucTreeInterface(this);
-		},
-		destroyed(){
+		destroyed() {
 			this.treeInterface.destructor();
 		}
 	}
-
-	function deepAssign(obj1, obj2) {
-		if (typeof obj1 !== 'object') obj1 = {};
-		if (typeof obj2 !== 'object') obj2 = {};
-		let result = Object.assign({}, obj1);
-
-		for (let key of Object.keys(obj2)) {
-			if (!obj1.hasOwnProperty(key) || obj1[key] === null || typeof obj2[key] !== typeof obj1[key] || typeof obj2[key] !== 'object' || Array.isArray(obj2[key])) {
-				result[key] = obj2[key];
-			}
-			else {
-				result[key] = deepAssign(result[key], obj2[key]);
-			}
-		}
-
-		return result;
-	}
 </script>
+
+<style scoped>
+
+</style>

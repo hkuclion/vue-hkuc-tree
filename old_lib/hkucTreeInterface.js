@@ -22,7 +22,7 @@ export default class hkucTreeInterface{
 		}
 
 		let index = this.nodes.indexOf(node);
-		console.log(this.nodes,node,index,node.name);
+
 		if(index === -1){
 			this.nodes.push(node);
 		}
@@ -103,7 +103,8 @@ export default class hkucTreeInterface{
 			parent = this.nodeMap[parent_id].vm.node;
 		}
 
-		this.vm.$set(parent.children,index,null);
+		//this.vm.$set(parent.children,index,null);
+		parent.children.splice(index,1);
 
 		let delete_ids = this._getChildIds(id, true);
 		for (let delete_id of delete_ids) {

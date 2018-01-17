@@ -4,8 +4,8 @@
 			class="tree-node-expand fa"
 			:class="{
 					'fa-blank':!hasChildren,
-					'fa-plus-square-o':hasChildren && !nodeState.isOpen,
-					'fa-minus-square-o':hasChildren && nodeState.isOpen
+					'fa-plus-square-o':hasChildren && !state.isOpen,
+					'fa-minus-square-o':hasChildren && state.isOpen
 				}"
 			:style="{
 					'cursor':hasChildren?'pointer':'default'
@@ -15,183 +15,169 @@
 			v-if="setting.check.enable"
 			class="tree-node-check fa"
 			:class="{
-				'fa-square-o':nodeState.isChecked === false,
-				'fa-check-square-o':nodeState.isChecked === true,
-				'fa-check-square':nodeState.isChecked === 'intermediate'
-			}"
-			@click="checkNode"
-		></span><a
+					'fa-square-o':state.isChecked === false,
+					'fa-check-square-o':state.isChecked === true,
+					'fa-check-square':state.isChecked === 'intermediate'
+				}"
+			@click="checkSwitch"
+		></span>
+		<a
 			class="tree-node"
 			@click="selectNode"
-			@dblclick="setting.view.dblClickExpand?expandSwitch($event):null"
-			@mouseenter="hoverNode(true)"
-			@mouseleave="hoverNode(false)"
-			:class="{selected:nodeState.isSelected}"
-			>
+			@dblclick="setting.view.dblClickExpand?expandSwitch:null"
+			@mouseenter="hoverSwitch(true)"
+			@mouseleave="hoverSwitch(false)"
+			:class="{selected:state.isSelected}"
+		>
 			<span
 				class="tree-node-icon fa"
 				:class="{
 					'fa-file-o':!hasChildren,
-					'fa-folder-o':hasChildren && !nodeState.isOpen,
-					'fa-folder-open-o':hasChildren && nodeState.isOpen
+					'fa-folder-o':hasChildren && !state.isOpen,
+					'fa-folder-open-o':hasChildren && state.isOpen
 				}"
 			></span><span
-				class="tree-node-name"
-				:title="node[setting.data.key.title]"
-				v-if="!nodeState.isEditing"
-			>{{node[setting.data.key.name]}}</span><span v-else>
+			class="tree-node-name"
+			:title="node[setting.data.key.title]"
+			v-if="!state.isEditing"
+		>{{node[setting.data.key.name]}}</span><span v-else>
 				<input ref="name-input" class="tree-node-name-input" type="text" v-model="newName" @keydown="_editKeyDown" @blur="cancelEdit(false)">
 			</span><span
-				class="tree-node-hover"
-				v-show="nodeState.isHover || nodeState.isSelected"
-			>
+			class="tree-node-hover"
+			v-if="state.isHover || state.isSelected"
+		>
 				<span
 					class="tree-node-hover-item"
-					v-if="setting.view.rename && (typeof(setting.view.rename) !== 'function' || typeof(setting.view.rename) === 'function' && setting.view.rename(nodeInterface,node))"
+					v-if="setting.view.rename && (typeof(setting.view.rename) !== 'function' || typeof(setting.view.rename) === 'function' && setting.view.rename(treeInterface,node))"
 				>
 					<component
 						:is="typeof(setting.view.rename) !== 'object'?'hover-rename':setting.view.rename"
 						:node="node"
 						:interface="nodeInterface"
 						@command="_command"
-					></component>
+					/>
 				</span><span
-					class="tree-node-hover-item"
-					v-if="setting.view.delete && (typeof(setting.view.delete) !== 'function' || typeof(setting.view.delete) === 'function' && setting.view.delete(nodeInterface,node))"
-				>
+			class="tree-node-hover-item"
+			v-if="setting.view.delete && (typeof(setting.view.delete) !== 'function' || typeof(setting.view.delete) === 'function' && setting.view.delete(treeInterface,node))"
+		>
 					<component
 						:is="typeof(setting.view.delete) !== 'object'?'hover-remove':setting.view.delete"
 						:node="node"
 						:interface="nodeInterface"
 						@command="_command"
-					></component>
+					/>
 				</span><span
-					class="tree-node-hover-item"
-					v-for="hover in setting.view.hover"
-					v-if="setting.view.hover && Array.isArray(setting.view.hover)"
-				>
+			class="tree-node-hover-item"
+			v-for="hover in setting.view.hover"
+			v-if="setting.view.hover && Array.isArray(setting.view.hover)"
+		>
 					<component
 						v-if="typeof(hover) === 'object'"
 						:is="hover"
 						:node="node"
 						:interface="nodeInterface"
 						@command="_command"
-					></component>
+					/>
 					<template v-else>{{hover}}</template>
 				</span>
 			</span>
 		</a>
+
 		<ul
-			v-if="hasChildren"
-			v-show="nodeState.isOpen"
 			class="tree-node-children"
+			v-if="node.children && childNodeIds"
+			v-show="state.isOpen"
 		>
 			<hkuc-tree-node
-				ref="child-node"
-				v-if="node[setting.data.key.children][index]"
-	            v-for="(childNode,index) in node[setting.data.key.children]"
-	            v-model="node[setting.data.key.children][index]"
-	            :key="index"
-	            :setting="setting"
-	            :level="level+1"
-	            :level-count="node[setting.data.key.children].length"
-	            :level-index="index"
-				:tree-interface="treeInterface"
-				:parent-interface="nodeInterface"
-			>
-			</hkuc-tree-node>
+				v-for="(childNode,index) in node.children"
+				:key="childNodeIds[index]"
+				v-model="node.children[index]"
+				:treeInterface="treeInterface"
+				:id="childNodeIds[index]"
+				:setting="setting"
+			/>
 		</ul>
-		<hkuc-tree-dummy
-			:tree-interface="treeInterface"
-			:parent-interface="nodeInterface"
-		>
-		</hkuc-tree-dummy>
 	</li>
 </template>
 
 <script>
-	import hkucTreeNodeInterface from '../lib/hkucTreeNodeInterface';
-	import hkucTreeDummy from './hkuc-tree-dummy.vue';
-	import hoverRename from './hover-rename.vue';
-	import hoverRemove from './hover-remove.vue';
-
 	export default {
-		name:'hkuc-tree-node',
-		components:{
-			hkucTreeDummy,
-			hoverRename,
-			hoverRemove
-		},
+		name:"hkuc-tree-node",
+		props:['node','id','treeInterface','setting'],
 		data(){
 			return {
-				nodeState:{
+				state:{
 					isOpen:true,
 					isSelected:false,
 					isChecked:false,
 					isHover:false,
 					isEditing:false,
+					isFirst:false,
+					isLast:false,
 				},
-				newName:null,
-				nodeInterface:null,
+
+				childNodeIds:null,
+				parentId:null,
+				level:0,
 			}
-		},
-		props:[
-			'node','setting','level','levelIndex','levelCount','treeInterface','parentInterface','id'
-		],
-		computed:{
-			hasChildren(){
-				return this.node[this.setting.data.key.children] && this.node[this.setting.data.key.children].length;
-			},
 		},
 		model:{
 			prop:'node',
-			event:'update',
+		},
+		computed:{
+			hasChildren() {
+				return this.node[this.setting.data.key.children] && this.node[this.setting.data.key.children].length;
+			},
 		},
 		methods:{
-			expandSwitch(expand){
-				if(expand instanceof Event){
-					expand = undefined;
-				}
-				this.nodeInterface._operate('switchExpand', expand);
+			remove(){
+				this.treeInterface.removeNode(this.id)
 			},
-			selectNode(selected,isMulti=false){
-				if(selected instanceof Event){
-					isMulti = selected.ctrlKey;
-					selected = true;
+			expandSwitch(){
+				this.treeInterface.setNodeOpen(this.id, !this.state.isOpen);
+			},
+			checkSwitch(){
+				this.treeInterface.setNodeChecked(this.id, !this.state.isChecked);
+			},
+			hoverSwitch(isHover){
+				this.treeInterface.setNodeHover(this.id, isHover);
+			},
+			selectNode(event){
+				let isSelected = true;
+				let isDelta = false;
+				if(event.ctrlKey){
+					isSelected = !this.state.isSelected;
+					isDelta = true;
 				}
 
-				this.nodeInterface._operate('select', selected, isMulti);
+				this.treeInterface.setNodeSelected(this.id, isSelected,isDelta);
 			},
-			checkNode(checked){
-				if (checked instanceof Event) {
-					checked = undefined
-				}
 
-				this.nodeInterface._operate('check', checked);
-			},
-			hoverNode(hover){
-				this.nodeState.isHover = hover;
-			},
-			cancelEdit(is_cancel=false){
-				if (this.nodeState.isEditing) {
-					this.nodeInterface._editName(is_cancel ? undefined : this.newName);
-					this.nodeState.isEditing = false;
+			cancelEdit(is_cancel = false){
+				if(!is_cancel){
+					this.treeInterface.setNodeName(this.newName);
 				}
+				this.nodeState.isEditing = false;
 			},
 			_editKeyDown(event){
-				if(event.keyCode === 13){
+				if (event.keyCode === 13) {
 					this.cancelEdit(false);
 				}
-				else if(event.keyCode === 27){
+				else if (event.keyCode === 27) {
 					this.cancelEdit(true);
 				}
 			},
-			_command(...args){
-				this.treeInterface._command(...args);
+		},
+		mounted(){
+			this.treeInterface.registerVm(this.id,this);
+
+			if(this.node.children){
+				this.childNodeIds = this.node.children.map(childNode=> this.treeInterface.registerNode(childNode,this.id));
 			}
-		},
-		created() {
-			this.nodeInterface = new hkucTreeNodeInterface(this);
-		},
+		}
 	}
 </script>
+
+<style scoped>
+
+</style>
