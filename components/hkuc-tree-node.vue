@@ -53,7 +53,7 @@
 					<component
 						:is="typeof(setting.view.rename) !== 'object'?'hover-rename':setting.view.rename"
 						:node="node"
-						:interface="nodeInterface"
+						:interface="treeInterface"
 						@command="_command"
 					/>
 				</span><span
@@ -63,7 +63,7 @@
 					<component
 						:is="typeof(setting.view.delete) !== 'object'?'hover-remove':setting.view.delete"
 						:node="node"
-						:interface="nodeInterface"
+						:interface="treeInterface"
 						@command="_command"
 					/>
 				</span><span
@@ -75,7 +75,7 @@
 						v-if="typeof(hover) === 'object'"
 						:is="hover"
 						:node="node"
-						:interface="nodeInterface"
+						:interface="treeInterface"
 						@command="_command"
 					/>
 					<template v-else>{{hover}}</template>
@@ -101,6 +101,9 @@
 </template>
 
 <script>
+	import HoverRemove from '../hover/hover-remove';
+	import HoverRename from '../hover/hover-rename';
+
 	export default {
 		name:"hkuc-tree-node",
 		props:['node','id','treeInterface','setting'],
@@ -120,6 +123,10 @@
 				parentId:null,
 				level:0,
 			}
+		},
+		components:{
+			HoverRemove,
+			HoverRename
 		},
 		model:{
 			prop:'node',
@@ -166,6 +173,9 @@
 				else if (event.keyCode === 27) {
 					this.cancelEdit(true);
 				}
+			},
+			_command(){
+
 			},
 		},
 		mounted(){
