@@ -1,11 +1,13 @@
 <template>
 	<div id="app">
 		<hkuc-tree
+			ref="tree"
 			v-model="treeNodes"
 			:setting="treeSetting"
-			@addChild = "addChild"
 		>
 		</hkuc-tree>
+
+		<button @click="getChecked">获取Checked</button>
 	</div>
 </template>
 
@@ -51,11 +53,8 @@
 			}
 		},
 		methods:{
-			addChild(nodeInterface,node){
-				let name = prompt('请输入新节点的名称',node.name);
-				if(name){
-					nodeInterface.addChild({name});
-				}
+			getChecked(){
+				console.log(this.$refs['tree'].treeInterface.api.getChecked());
 			}
 		},
 		components:{

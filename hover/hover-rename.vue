@@ -4,12 +4,10 @@
 
 <script>
 	export default {
-		props:['node','interface'],
+		props:['node','api'],
 		methods:{
 			editName(){
-				if(!this['interface'].getState('isEditing')) {
-					this['interface'].editName();
-				}
+				this.api.editName(this.node)
 			}
 		}
 	}

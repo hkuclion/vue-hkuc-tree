@@ -1,14 +1,9 @@
 <template>
-	<span>{{interface.id}}</span>
+	<span>{{api.provider.getId(node)}}</span>
 </template>
 
 <script>
 	export default {
-		props:['node','interface'],
-		methods:{
-			click(){
-				this.$emit('command','addChild',this['interface'],this.node);
-			}
-		}
+		props:['node','api'],
 	}
 </script>

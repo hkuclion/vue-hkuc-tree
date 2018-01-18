@@ -53,8 +53,7 @@
 					<component
 						:is="typeof(setting.view.rename) !== 'object'?'hover-rename':setting.view.rename"
 						:node="node"
-						:interface="treeInterface"
-						@command="_command"
+						:api="treeInterface.api"
 					/>
 				</span><span
 			class="tree-node-hover-item"
@@ -63,8 +62,7 @@
 					<component
 						:is="typeof(setting.view.delete) !== 'object'?'hover-remove':setting.view.delete"
 						:node="node"
-						:interface="treeInterface"
-						@command="_command"
+						:api="treeInterface.api"
 					/>
 				</span><span
 			class="tree-node-hover-item"
@@ -75,8 +73,7 @@
 						v-if="typeof(hover) === 'object'"
 						:is="hover"
 						:node="node"
-						:interface="treeInterface"
-						@command="_command"
+						:api="treeInterface.api"
 					/>
 					<template v-else>{{hover}}</template>
 				</span>
@@ -162,10 +159,11 @@
 
 			cancelEdit(is_cancel = false){
 				if(!is_cancel){
-					this.treeInterface.setNodeName(this.newName);
+					this.treeInterface.renameNode(this.id,this.newName);
 				}
-				this.nodeState.isEditing = false;
+				this.state.isEditing = false;
 			},
+
 			_editKeyDown(event){
 				if (event.keyCode === 13) {
 					this.cancelEdit(false);
@@ -173,9 +171,6 @@
 				else if (event.keyCode === 27) {
 					this.cancelEdit(true);
 				}
-			},
-			_command(){
-
 			},
 		},
 		mounted(){

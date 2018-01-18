@@ -1,13 +1,13 @@
 <template>
-	<span class="fa fa-trash" style="color: red;" @click.stop="removeNode"></span>
+	<span class="fa fa-trash" style="color: red;" @click.stop="remove"></span>
 </template>
 
 <script>
 	export default {
-		props:['node','interface'],
+		props:['node','api'],
 		methods:{
-			removeNode(){
-				this['interface'].remove();
+			remove(){
+				this.api.remove(this.node)
 			}
 		}
 	}
