@@ -11,6 +11,7 @@
 			:treeInterface="treeInterface"
 			:id="childNodeIds[index]"
 			:setting="setting"
+			:class="{'hkuc-last-visible':index === lastVisibleChildIndex}"
 		/>
 	</ul>
 </template>

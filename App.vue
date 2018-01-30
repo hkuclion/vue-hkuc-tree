@@ -54,7 +54,7 @@
 		},
 		methods:{
 			getChecked(){
-				console.log(JSON.parse(JSON.stringify(this.$refs['tree'].treeInterface.api.getChecked())));
+				console.log(JSON.parse(JSON.stringify(this.$refs['tree'].api.getChecked())));
 			}
 		},
 		components:{
