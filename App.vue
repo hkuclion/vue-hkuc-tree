@@ -4,6 +4,8 @@
 			ref="tree"
 			v-model="treeNodes"
 			:setting="treeSetting"
+
+			@addChild = "addChild"
 		>
 		</hkuc-tree>
 
@@ -55,6 +57,9 @@
 		methods:{
 			getChecked(){
 				console.log(JSON.parse(JSON.stringify(this.$refs['tree'].treeInterface.api.getChecked())));
+			},
+			addChild(parentNode){
+				console.log(parentNode);
 			}
 		},
 		components:{

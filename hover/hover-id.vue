@@ -1,5 +1,5 @@
 <template>
-	<span>{{api.provider.getId(node)}}</span>
+	<span>{{api.getId(node)}}</span>
 </template>
 
 <script>

@@ -47,6 +47,7 @@
 				rootId:null,
 				treeInterface:null,
 				mergedSetting:null,
+				api:null,
 			}
 		},
 		components:{
@@ -58,7 +59,8 @@
 		},
 		mounted(){
 			this.mergedSetting = extend(true,{},defaultSetting,this.setting);
-			this.treeInterface = new HkucTreeInterface(this.mergedSetting);
+			this.treeInterface = new HkucTreeInterface(this,this.mergedSetting);
+			this.api = this.treeInterface.api;
 
 			this.rootNode = {
 				children:this.nodes

@@ -2,23 +2,13 @@
 	<li :class="{'node-line':!hasChildren,['tree-level-'+level]:true}">
 		<span
 			class="tree-node-expand fa"
-			:class="{
-					'fa-blank':!hasChildren,
-					'fa-plus-square-o':hasChildren && !state.isOpen,
-					'fa-minus-square-o':hasChildren && state.isOpen
-				}"
-			:style="{
-					'cursor':hasChildren?'pointer':'default'
-				}"
+			:class="expandClass"
+			:style="{'cursor':hasChildren?'pointer':'default'}"
 			@click="expandSwitch"
 		></span><span
 			v-if="setting.check.enable"
 			class="tree-node-check fa"
-			:class="{
-					'fa-square-o':state.isChecked === false,
-					'fa-check-square-o':state.isChecked === true,
-					'fa-check-square':state.isChecked === 'intermediate'
-				}"
+			:class="checkClass"
 			@click="checkSwitch"
 		></span>
 		<a
@@ -31,21 +21,17 @@
 		>
 			<span
 				class="tree-node-icon fa"
-				:class="{
-					'fa-file-o':!hasChildren,
-					'fa-folder-o':hasChildren && !state.isOpen,
-					'fa-folder-open-o':hasChildren && state.isOpen
-				}"
+				:class="typeClass"
 			></span><span
-			class="tree-node-name"
-			:title="node[setting.data.key.title]"
-			v-if="!state.isEditing"
-		>{{node[setting.data.key.name]}}</span><span v-else>
+				class="tree-node-name"
+				:title="node[setting.data.key.title]"
+				v-if="!state.isEditing"
+			>{{node[setting.data.key.name]}}</span><span v-else>
 				<input ref="name-input" class="tree-node-name-input" type="text" v-model="newName" @keydown="_editKeyDown" @blur="cancelEdit(false)">
 			</span><span
-			class="tree-node-hover"
-			v-if="state.isHover || state.isSelected"
-		>
+				class="tree-node-hover"
+				v-if="state.isHover || state.isSelected"
+			>
 				<span
 					class="tree-node-hover-item"
 					v-if="setting.view.rename && (typeof(setting.view.rename) !== 'function' || typeof(setting.view.rename) === 'function' && setting.view.rename(treeInterface,node))"
@@ -54,27 +40,27 @@
 						:is="typeof(setting.view.rename) !== 'object'?'hover-rename':setting.view.rename"
 						:node="node"
 						:api="treeInterface.api"
-					/>
+					></component>
 				</span><span
-			class="tree-node-hover-item"
-			v-if="setting.view.delete && (typeof(setting.view.delete) !== 'function' || typeof(setting.view.delete) === 'function' && setting.view.delete(treeInterface,node))"
-		>
+					class="tree-node-hover-item"
+					v-if="setting.view.delete && (typeof(setting.view.delete) !== 'function' || typeof(setting.view.delete) === 'function' && setting.view.delete(treeInterface,node))"
+				>
 					<component
 						:is="typeof(setting.view.delete) !== 'object'?'hover-remove':setting.view.delete"
 						:node="node"
 						:api="treeInterface.api"
-					/>
+					></component>
 				</span><span
-			class="tree-node-hover-item"
-			v-for="hover in setting.view.hover"
-			v-if="setting.view.hover && Array.isArray(setting.view.hover)"
-		>
+					class="tree-node-hover-item"
+					v-for="hover in setting.view.hover"
+					v-if="setting.view.hover && Array.isArray(setting.view.hover)"
+				>
 					<component
 						v-if="typeof(hover) === 'object'"
 						:is="hover"
 						:node="node"
 						:api="treeInterface.api"
-					/>
+					></component>
 					<template v-else>{{hover}}</template>
 				</span>
 			</span>
@@ -92,7 +78,7 @@
 				:treeInterface="treeInterface"
 				:id="childNodeIds[index]"
 				:setting="setting"
-			/>
+			></hkuc-tree-node>
 		</ul>
 	</li>
 </template>
@@ -132,6 +118,27 @@
 			hasChildren() {
 				return this.node[this.setting.data.key.children] && this.node[this.setting.data.key.children].length;
 			},
+			expandClass(){
+				return {
+					'fa-blank':!this.hasChildren,
+					'fa-plus-square-o':this.hasChildren && !this.state.isOpen,
+					'fa-minus-square-o':this.hasChildren && this.state.isOpen
+				}
+			},
+			checkClass(){
+				return {
+					'fa-square-o':this.state.isChecked === false,
+					'fa-check-square-o':this.state.isChecked === true,
+					'fa-check-square':this.state.isChecked === 'intermediate'
+				}
+			},
+			typeClass(){
+				return {
+					'fa-file-o':!this.hasChildren,
+					'fa-folder-o':this.hasChildren && !this.state.isOpen,
+					'fa-folder-open-o':this.hasChildren && this.state.isOpen
+				}
+			}
 		},
 		methods:{
 			remove(){
@@ -156,14 +163,12 @@
 
 				this.treeInterface.setNodeSelected(this.id, isSelected,isDelta);
 			},
-
 			cancelEdit(is_cancel = false){
 				if(!is_cancel){
 					this.treeInterface.renameNode(this.id,this.newName);
 				}
 				this.state.isEditing = false;
 			},
-
 			_editKeyDown(event){
 				if (event.keyCode === 13) {
 					this.cancelEdit(false);
