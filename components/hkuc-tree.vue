@@ -53,6 +53,11 @@
 		components:{
 			HkucTreeNodeRoot,
 		},
+		computed:{
+			api(){
+				return this.treeInterface && this.treeInterface.api;
+			}
+		},
 		model:{
 			prop:'nodes',
 			event:'update',

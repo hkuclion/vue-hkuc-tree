@@ -1,5 +1,5 @@
 <template>
-	<li :class="{'node-line':!hasChildren,['tree-level-'+level]:true}">
+	<li :class="{'node-line':!hasChildren,['tree-level-'+level]:true}" v-show="!state.isHidden">
 		<span
 			class="tree-node-expand fa"
 			:class="expandClass"
@@ -78,6 +78,8 @@
 				:treeInterface="treeInterface"
 				:id="childNodeIds[index]"
 				:setting="setting"
+				ref="childNodes"
+				:class="{'hkuc-last-child':lastVisibleChildIndex===index}"
 			></hkuc-tree-node>
 		</ul>
 	</li>
@@ -97,12 +99,14 @@
 					isSelected:false,
 					isChecked:false,
 					isHover:false,
+					isHidden:false,
 					isEditing:false,
 					isFirst:false,
 					isLast:false,
 				},
 
 				childNodeIds:null,
+				lastVisibleChildIndex:null,
 				parentId:null,
 				level:0,
 			}
@@ -183,6 +187,9 @@
 
 			if(this.node.children){
 				this.childNodeIds = this.node.children.map(childNode=> this.treeInterface.registerNode(childNode,this.id));
+				this.$nextTick(()=>{
+					this.lastVisibleChildIndex = this.childNodeIds.indexOf(this.childNodeIds.slice().reverse().find(childNodeId=>this.treeInterface.getNodeState(childNodeId,'isHidden')===false));
+				});
 			}
 		}
 	}

@@ -60,6 +60,7 @@
 			},
 			addChild(parentNode){
 				console.log(parentNode);
+				console.log(JSON.parse(JSON.stringify(this.$refs['tree'].api.getChecked())));
 			}
 		},
 		components:{
