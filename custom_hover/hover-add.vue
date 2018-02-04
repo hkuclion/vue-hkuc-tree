@@ -3,8 +3,9 @@
 </template>
 
 <script>
+	import HoverBase from '../hover/hover-base';
 	export default {
-		props:['node','api'],
+		extends:HoverBase,
 		methods:{
 			add(){
 				this.api.$emit('addChild',this.node);

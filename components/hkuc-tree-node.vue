@@ -14,7 +14,7 @@
 		<a
 			class="tree-node"
 			@click="selectNode"
-			@dblclick="setting.view.dblClickExpand?expandSwitch:null"
+			@dblclick="_nodeDblClick"
 			@mouseenter="hoverSwitch(true)"
 			@mouseleave="hoverSwitch(false)"
 			:class="{selected:state.isSelected}"
@@ -79,7 +79,7 @@
 				:id="childNodeIds[index]"
 				:setting="setting"
 				ref="childNodes"
-				:class="{'hkuc-last-child':lastVisibleChildIndex===index}"
+				:class="{'hkuc-last-visible':lastVisibleChildIndex===index}"
 			></hkuc-tree-node>
 		</ul>
 	</li>
@@ -101,8 +101,6 @@
 					isHover:false,
 					isHidden:false,
 					isEditing:false,
-					isFirst:false,
-					isLast:false,
 				},
 
 				childNodeIds:null,
@@ -131,7 +129,7 @@
 			},
 			checkClass(){
 				return {
-					'fa-square-o':this.state.isChecked === false,
+					'fa-square-o':!this.state.isChecked,
 					'fa-check-square-o':this.state.isChecked === true,
 					'fa-check-square':this.state.isChecked === 'intermediate'
 				}
@@ -181,14 +179,17 @@
 					this.cancelEdit(true);
 				}
 			},
+			_nodeDblClick(){
+				if(this.setting.view.dblClickExpand)this.expandSwitch();
+			}
 		},
 		mounted(){
 			this.treeInterface.registerVm(this.id,this);
 
 			if(this.node.children){
 				this.childNodeIds = this.node.children.map(childNode=> this.treeInterface.registerNode(childNode,this.id));
-				this.$nextTick(()=>{
-					this.lastVisibleChildIndex = this.childNodeIds.indexOf(this.childNodeIds.slice().reverse().find(childNodeId=>this.treeInterface.getNodeState(childNodeId,'isHidden')===false));
+				this.$nextTick(() => {
+					this.treeInterface.updateNodeLastVisibleChildIndex(this.id);
 				});
 			}
 		}

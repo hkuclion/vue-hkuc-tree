@@ -3,8 +3,10 @@
 </template>
 
 <script>
+	import HoverBase from './hover-base';
+
 	export default {
-		props:['node','api'],
+		extends:HoverBase,
 		methods:{
 			remove(){
 				this.api.remove(this.node)
